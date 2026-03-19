@@ -1,61 +1,61 @@
 # dotnet-scaffold
 
-Skill interativa para scaffolding de projetos .NET Web API prontos para produção, com infraestrutura Docker completa, testes, monitoramento e scripts operacionais — tudo configurado de acordo com as preferências do usuário.
+An interactive skill that scaffolds production-ready .NET Web API projects with full Docker infrastructure, testing setup, monitoring, and operational scripts — all configured to the user's preferences.
 
 ---
 
-## O que ela faz
+## What it does
 
-Funciona como um **wizard guiado em duas fases**:
+Works as a **guided wizard in two phases**:
 
-1. **Discovery** — faz perguntas ao usuário para entender suas escolhas
-2. **Scaffold** — gera todos os arquivos de uma vez, com base nas respostas
+1. **Discovery** — asks the user a series of questions to understand their preferences
+2. **Scaffold** — generates all files at once based on the collected answers
 
-Essa abordagem garante consistência: muitas decisões são interconectadas (ex: estratégia de cache afeta `docker-compose.yml`, pacotes NuGet e arquivos de configuração simultaneamente).
+This approach ensures consistency: many decisions are interconnected (e.g., cache strategy affects `docker-compose.yml`, NuGet packages, and configuration files simultaneously).
 
-### O que é gerado
+### What gets generated
 
-| Artefato | Detalhes |
+| Artifact | Details |
 |---|---|
-| Estrutura da solution | Clean Architecture: `Api`, `Domain`, `Application`, `Infrastructure` |
-| Testes unitários | xUnit + FakeItEasy + Coverlet + ReportGenerator |
-| Testes de integração | Jest (Node.js) com cliente HTTP e setup/teardown automáticos |
+| Solution structure | Clean Architecture: `Api`, `Domain`, `Application`, `Infrastructure` |
+| Unit tests | xUnit + FakeItEasy + Coverlet + ReportGenerator |
+| Integration tests | Jest (Node.js) with HTTP client and automatic setup/teardown |
 | Docker Compose | PostgreSQL, Redis, RabbitMQ, ElasticSearch, Grafana + Loki |
-| Scripts operacionais | `init.sh`, `down.sh`, `check.sh`, `watch.sh`, `test.sh` |
-| Scripts tmux | `tmux-dev.sh` (multi-janela) e `tmux-stop.sh` |
-| Health check endpoint | `/health` verificando DB, Redis e demais serviços |
-| Arquivo de instruções | `CLAUDE.md` ou `AGENTS.md` com documentação completa do projeto |
+| Operational scripts | `init.sh`, `down.sh`, `check.sh`, `watch.sh`, `test.sh` |
+| tmux scripts | `tmux-dev.sh` (multi-window) and `tmux-stop.sh` |
+| Health check endpoint | `/health` checking DB, Redis and other services |
+| Instructions file | `CLAUDE.md` or `AGENTS.md` with full project documentation |
 
 ---
 
-## Como usar
+## How to use
 
-Basta dizer ao Claude que quer criar um novo projeto .NET. A skill é ativada automaticamente por frases como:
+Just tell Claude you want to create a new .NET project. The skill is triggered automatically by phrases like:
 
-- "cria um novo projeto .NET"
-- "scaffold de uma API em C#"
-- "quero um boilerplate .NET com Docker"
-- "configura o backend com PostgreSQL e Redis"
-- "set up the backend" (em repositório com .NET no CLAUDE.md)
+- "create a new .NET project"
+- "scaffold a C# API"
+- "I want a .NET boilerplate with Docker"
+- "set up the backend with PostgreSQL and Redis"
+- "set up the backend" (in a repo that has .NET in CLAUDE.md)
 
-### Perguntas feitas durante o Discovery
+### Questions asked during Discovery
 
-A skill pergunta **uma de cada vez**:
+The skill asks **one at a time**:
 
-1. **Versão do .NET** — 7, 8, 9 ou 10 (padrão: 10)
-2. **Arquivo de instruções** — `CLAUDE.md` (Claude Code/CLI) ou `AGENTS.md` (Cursor, Windsurf)
-3. **Docker** — verifica se está instalado; oferece instalação caso não esteja
-4. **Banco de dados** — PostgreSQL (padrão: sim)
-5. **Cache** — Hybrid (MemoryCache + Redis), Redis only, ou MemoryCache only
-6. **Infraestrutura adicional** — RabbitMQ, ElasticSearch, Grafana + Loki (seleção múltipla)
-7. **Documentação de API** — Scalar (padrão) ou Swagger
-8. **Login social** — Google, Apple, Facebook, etc. (afeta pacotes NuGet e configuração de auth)
+1. **.NET Version** — 7, 8, 9, or 10 (default: 10)
+2. **Instructions file** — `CLAUDE.md` (Claude Code/CLI) or `AGENTS.md` (Cursor, Windsurf)
+3. **Docker** — checks if it's installed; offers to install it if not
+4. **Database** — PostgreSQL (default: yes)
+5. **Cache** — Hybrid (MemoryCache + Redis), Redis only, or MemoryCache only
+6. **Additional infrastructure** — RabbitMQ, ElasticSearch, Grafana + Loki (multi-select)
+7. **API documentation** — Scalar (default) or Swagger
+8. **Social login** — Google, Apple, Facebook, etc. (affects NuGet packages and auth config)
 
-Após todas as respostas, apresenta um **resumo das escolhas** e pede confirmação antes de gerar qualquer arquivo.
+After all answers, presents a **summary of choices** and asks for confirmation before generating any files.
 
 ---
 
-## Estrutura gerada
+## Generated structure
 
 ```
 <ProjectName>/
@@ -83,26 +83,26 @@ Após todas as respostas, apresenta um **resumo das escolhas** e pede confirmaç
 ├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
-└── CLAUDE.md (ou AGENTS.md)
+└── CLAUDE.md (or AGENTS.md)
 ```
 
 ---
 
-## Scripts operacionais gerados
+## Generated operational scripts
 
-| Script | O que faz |
+| Script | What it does |
 |---|---|
-| `scripts/init.sh` | Setup completo: copia `.env`, restaura pacotes, sobe Docker, roda migrations, seed e verifica health |
-| `scripts/down.sh` | Para tudo; flags `--force`, `--clean`, `--force --clean` |
-| `scripts/check.sh` | Verifica status (OK / PENDING / DEGRADED); flag `--fix` para auto-reparo |
-| `scripts/watch.sh` | Tail de logs; flag `--ps` para monitorar processos |
-| `scripts/test.sh` | Roda testes unitários com cobertura e gera relatório HTML |
-| `scripts/tmux-dev.sh` | Abre sessão tmux com 4 janelas: server, docker logs, health monitor, terminal livre |
-| `scripts/tmux-stop.sh` | Encerra a sessão tmux |
+| `scripts/init.sh` | Full setup: copies `.env`, restores packages, starts Docker, runs migrations, seeds and checks health |
+| `scripts/down.sh` | Stops everything; flags `--force`, `--clean`, `--force --clean` |
+| `scripts/check.sh` | Checks status (OK / PENDING / DEGRADED); flag `--fix` for auto-repair |
+| `scripts/watch.sh` | Tails logs; flag `--ps` to monitor processes |
+| `scripts/test.sh` | Runs unit tests with coverage and generates HTML report |
+| `scripts/tmux-dev.sh` | Opens tmux session with 4 windows: server, docker logs, health monitor, free terminal |
+| `scripts/tmux-stop.sh` | Terminates the tmux session |
 
 ---
 
-## Referências internas
+## Internal references
 
-- [references/docker-compose-templates.md](references/docker-compose-templates.md) — snippets de compose para cada serviço
-- [references/tmux-setup.md](references/tmux-setup.md) — templates dos scripts tmux
+- [references/docker-compose-templates.md](references/docker-compose-templates.md) — compose snippets for each service
+- [references/tmux-setup.md](references/tmux-setup.md) — tmux script templates
